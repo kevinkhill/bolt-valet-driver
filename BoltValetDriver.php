@@ -1,24 +1,5 @@
 <?php
 
-class BoltSmsRecursiveFilterIterator extends RecursiveFilterIterator {
-
-    public static $FILTERS = [
-        '.',
-        '..',
-        'node_modules',
-        'bower_components'
-    ];
-
-    public function accept() {
-        return ! in_array(
-            $this->current()->getFilename(),
-            self::$FILTERS,
-            true
-        );
-    }
-
-}
-
 class BoltValetDriver extends ValetDriver
 {
     /**
@@ -48,23 +29,10 @@ class BoltValetDriver extends ValetDriver
      */
     public function isStaticFile($sitePath, $siteName, $uri)
     {
-        $recursiveThemeIterator = new RecursiveDirectoryIterator($sitePath.'/theme/');
-        $filteredThemeIterator = new BoltSmsRecursiveFilterIterator($recursiveThemeIterator);
-        $filteredRecursiveThemeIterator = new RecursiveIteratorIterator($filteredThemeIterator);
 
-        $recursiveFilesIterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($sitePath.'/files/')
-        );
-
-        $staticFiles = new AppendIterator();
-        $staticFiles->append($filteredRecursiveThemeIterator);
-        $staticFiles->append($recursiveFilesIterator);
-
-        //foreach ($staticFiles as $file) {
-            if (file_exists($staticFilePath = $sitePath.$uri)) {
-                return $staticFilePath;
-            }
-        //}
+        if (file_exists($staticFilePath = $sitePath.$uri)) {
+            return $staticFilePath;
+        }
 
         if (file_exists($staticFilePath = $sitePath.'/files/'.$uri)) {
             return $staticFilePath;
